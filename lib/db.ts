@@ -1,22 +1,23 @@
-import { MongoClient } from "mongodb"
+import { MongoClient, Db } from "mongodb"
 
-let cachedClient = null
-let cachedDb = null
+let cachedClient: MongoClient | null = null
+let cachedDb: Db | null = null
 
 export async function dbConnect() {
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb }
   }
 
-  const client = await MongoClient.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  const uri = process.env.MONGODB_URI
+  if (!uri) {
+    throw new Error("Please define the MONGODB_URI environment variable")
+  }
 
-  const db = client.db() // Uses the default DB specified in the URI
+  const client = await MongoClient.connect(uri) // ⬅️ no options needed
+
+  const db = client.db() // Uses default DB from URI
   cachedClient = client
   cachedDb = db
 
   return { client, db }
 }
-

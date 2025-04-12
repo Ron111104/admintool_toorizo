@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { type Quotation, emptyQuotation } from "@/lib/models/quotation"
 import { addQuotation, updateQuotation } from "@/lib/quotation-actions"
-import { generateQuotationPDF } from "@/lib/pdf-generator"
+import { generateBasicPDF } from "@/lib/basic-pdf-generator"
 import { Loader2, Save, FileDown, ArrowLeft } from "lucide-react"
 
 interface QuotationFormProps {
@@ -94,7 +94,8 @@ export default function QuotationForm({ initialData = emptyQuotation, isEditing 
   const handleDownloadPDF = () => {
     try {
       setIsGeneratingPDF(true)
-      const success = generateQuotationPDF(formData)
+      // Use the basic PDF generator that doesn't rely on autoTable
+      const success = generateBasicPDF(formData)
 
       if (success) {
         toast({
@@ -623,4 +624,3 @@ export default function QuotationForm({ initialData = emptyQuotation, isEditing 
     </form>
   )
 }
-

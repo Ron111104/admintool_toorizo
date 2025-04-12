@@ -1,18 +1,9 @@
 "use client"
 
 import { jsPDF } from "jspdf"
-// Import the autotable plugin properly
-import "jspdf-autotable"
 import type { Quotation } from "./models/quotation"
 
-// Define the type for jsPDF with autoTable
-declare module "jspdf" {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF
-  }
-}
-
-export function generateQuotationPDF(quotation: Quotation) {
+export function generateBasicPDF(quotation: Quotation) {
   try {
     // Create new document
     const doc = new jsPDF()
@@ -39,41 +30,57 @@ export function generateQuotationPDF(quotation: Quotation) {
     doc.text(`Transport Cost: ${quotation.transportCost || 0}`, 14, 120)
     doc.text(`Extra Transport Cost: ${quotation.extraTransportCost || 0}`, 14, 130)
 
-    // Add pricing table
+    // Add pricing details - manually create a simple table
     doc.setFontSize(16)
     doc.text("Pricing Details", 14, 150)
 
-    // Use autoTable with simpler options
-    doc.autoTable({
-      startY: 160,
-      head: [["Package", "Price"]],
-      body: [
-        ["Basic", quotation.basicCost?.toString() || "0"],
-        ["Comfort", quotation.comfortCost?.toString() || "0"],
-        ["Premium", quotation.premiumCost?.toString() || "0"],
-      ],
-    })
+    // Draw table header
+    doc.setFillColor(220, 220, 220)
+    doc.rect(14, 160, 80, 10, "F")
+    doc.rect(94, 160, 80, 10, "F")
 
-    // Get the final Y position after the table
-    const finalY = (doc as any).lastAutoTable.finalY + 10
+    // Draw table header text
+    doc.setFontSize(12)
+    doc.text("Package", 20, 167)
+    doc.text("Price", 100, 167)
 
+    // Draw table rows
+    doc.rect(14, 170, 80, 10)
+    doc.rect(94, 170, 80, 10)
+    doc.text("Basic", 20, 177)
+    doc.text(`${quotation.basicCost || 0}`, 100, 177)
+
+    doc.rect(14, 180, 80, 10)
+    doc.rect(94, 180, 80, 10)
+    doc.text("Comfort", 20, 187)
+    doc.text(`${quotation.comfortCost || 0}`, 100, 187)
+
+    doc.rect(14, 190, 80, 10)
+    doc.rect(94, 190, 80, 10)
+    doc.text("Premium", 20, 197)
+    doc.text(`${quotation.premiumCost || 0}`, 100, 197)
+
+    // Add trip details
     doc.setFontSize(16)
-    doc.text("Trip Details", 14, finalY)
+    doc.text("Trip Details", 14, 210)
 
     doc.setFontSize(12)
-    doc.text(`Adults: ${quotation.tripDetails?.adults || 0}`, 14, finalY + 10)
-    doc.text(`Children: ${quotation.tripDetails?.children || 0}`, 14, finalY + 20)
+    doc.text(`Adults: ${quotation.tripDetails?.adults || 0}`, 14, 220)
+    doc.text(`Children: ${quotation.tripDetails?.children || 0}`, 14, 230)
 
     // Add booking details if available
     if (quotation.bookingDetails?.checkinDate) {
+      doc.addPage()
       doc.setFontSize(16)
-      doc.text("Booking Details", 14, finalY + 40)
+      doc.text("Booking Details", 14, 20)
 
       doc.setFontSize(12)
-      doc.text(`Check-in: ${quotation.bookingDetails.checkinDate}`, 14, finalY + 50)
-      doc.text(`Check-out: ${quotation.bookingDetails.checkoutDate || "N/A"}`, 14, finalY + 60)
-      doc.text(`Nights: ${quotation.bookingDetails.nights || 0}`, 14, finalY + 70)
-      doc.text(`Location: ${quotation.bookingDetails.location || "N/A"}`, 14, finalY + 80)
+      doc.text(`Check-in: ${quotation.bookingDetails.checkinDate}`, 14, 30)
+      doc.text(`Check-out: ${quotation.bookingDetails.checkoutDate || "N/A"}`, 14, 40)
+      doc.text(`Nights: ${quotation.bookingDetails.nights || 0}`, 14, 50)
+      doc.text(`Location: ${quotation.bookingDetails.location || "N/A"}`, 14, 60)
+      doc.text(`Breakfast: ${quotation.bookingDetails.breakfast ? "Yes" : "No"}`, 14, 70)
+      doc.text(`Dinner: ${quotation.bookingDetails.dinner ? "Yes" : "No"}`, 14, 80)
     }
 
     // Add itinerary if available

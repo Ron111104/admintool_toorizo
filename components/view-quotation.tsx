@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { FileDown, Edit, ArrowLeft, Loader2 } from "lucide-react"
 import type { Quotation } from "@/lib/models/quotation"
-import { generateQuotationPDF } from "@/lib/pdf-generator"
+import { generateBasicPDF } from "@/lib/basic-pdf-generator"
 import { useToast } from "@/components/ui/use-toast"
 
 export default function ViewQuotation({ quotation }: { quotation: Quotation }) {
@@ -18,7 +18,8 @@ export default function ViewQuotation({ quotation }: { quotation: Quotation }) {
   const handleDownloadPDF = () => {
     try {
       setIsGeneratingPDF(true)
-      const success = generateQuotationPDF(quotation)
+      // Use the basic PDF generator that doesn't rely on autoTable
+      const success = generateBasicPDF(quotation)
 
       if (success) {
         toast({
@@ -227,4 +228,3 @@ export default function ViewQuotation({ quotation }: { quotation: Quotation }) {
     </div>
   )
 }
-

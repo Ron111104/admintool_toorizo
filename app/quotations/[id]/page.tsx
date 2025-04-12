@@ -5,7 +5,12 @@ import ViewQuotationPage from "@/components/view-quotation"
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
-export default async function QuotationPage({ params }) {
+// Add type for params
+export default async function QuotationPage({
+  params,
+}: {
+  params: { id: string }
+}) {
   const quotation = await getQuotationById(params.id)
 
   if (!quotation) {
@@ -22,4 +27,3 @@ export default async function QuotationPage({ params }) {
     </div>
   )
 }
-

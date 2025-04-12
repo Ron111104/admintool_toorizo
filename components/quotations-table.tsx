@@ -33,7 +33,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { Quotation } from "@/lib/models/quotation"
 import { useRouter } from "next/navigation"
-import { generateQuotationPDF } from "@/lib/pdf-generator"
+import { generateBasicPDF } from "@/lib/basic-pdf-generator"
 import { Card, CardContent } from "@/components/ui/card"
 
 export default function QuotationsTable({ initialQuotations }) {
@@ -133,7 +133,8 @@ export default function QuotationsTable({ initialQuotations }) {
 
   const handleDownloadPDF = (quotation: Quotation) => {
     try {
-      const success = generateQuotationPDF(quotation)
+      // Use the basic PDF generator that doesn't rely on autoTable
+      const success = generateBasicPDF(quotation)
 
       if (success) {
         toast({
@@ -403,4 +404,3 @@ export default function QuotationsTable({ initialQuotations }) {
     </div>
   )
 }
-
